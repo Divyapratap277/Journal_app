@@ -127,7 +127,7 @@ type Props = {
 
 export function TradeForm({ trade, strategies = [], submitLabel, onSubmit }: Props) {
   const { accounts, activeId } = useAccounts();
-  const defaultAccount = trade?.accountId ?? (activeId !== "all" ? activeId : accounts[0]?.id ?? "");
+  const defaultAccount = trade?.accountId ?? activeId ?? "";
   const [values, setValues] = useState<TradeFormValues>(trade ? fromTrade(trade) : emptyValues(defaultAccount));
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +152,7 @@ export function TradeForm({ trade, strategies = [], submitLabel, onSubmit }: Pro
 
   useEffect(() => {
     if (trade) return;
-    const preferred = activeId !== "all" && accounts.some((a) => a.id === activeId) ? activeId : accounts[0]?.id;
+    const preferred = accounts.some((a) => a.id === activeId) ? activeId : accounts[0]?.id;
     if (preferred && values.accountId !== preferred && !accounts.some((a) => a.id === values.accountId)) {
       setValues((prev) => ({ ...prev, accountId: preferred }));
     }

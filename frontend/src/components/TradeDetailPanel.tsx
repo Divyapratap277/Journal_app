@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import { displayProfitLoss, formatDateTime, formatMoney, pnlClass } from "../format";
+import { cn, displayProfitLoss, formatDateTime, formatMoney } from "../format";
 import { riskReward } from "../trading";
 import type { Trade } from "../types";
 import { useAccounts } from "../account";
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, valueClass }: { label: string; value: string; valueClass?: string }) {
   return (
-    <div className="grid gap-1 border-b border-line py-2 sm:grid-cols-3">
-      <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{label}</div>
-      <div className="text-sm sm:col-span-2 whitespace-pre-wrap tabular">{value || "—"}</div>
+    <div className="grid gap-1 border-b border-line py-2.5 sm:grid-cols-3">
+      <div className="text-xs font-bold uppercase tracking-wide text-white">{label}</div>
+      <div className={cn("text-sm font-bold sm:col-span-2 whitespace-pre-wrap tabular text-white", valueClass)}>{value || "—"}</div>
     </div>
   );
 }
@@ -31,9 +31,10 @@ export function TradeDetailPanel({
       <aside className="h-full w-full max-w-lg overflow-y-auto border-l border-line bg-surface p-5">
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold">{trade.symbol}</h2>
-            <p className="text-sm text-zinc-500">
-              {trade.direction === "BUY" ? "▲ Buy" : "▼ Sell"} · {formatDateTime(trade.openedAt)}
+            <h2 className="text-xl font-bold text-white">{trade.symbol}</h2>
+            <p className={cn("text-sm font-bold", trade.direction === "BUY" ? "text-profit" : "text-loss")}>
+              {trade.direction === "BUY" ? "▲ Buy" : "▼ Sell"}{" "}
+              <span className="font-bold text-white">· {formatDateTime(trade.openedAt)}</span>
             </p>
           </div>
           <button type="button" onClick={onClose} className="text-zinc-400 hover:text-white">
@@ -48,7 +49,11 @@ export function TradeDetailPanel({
         <Row label="Take profit" value={trade.takeProfit ?? ""} />
         <Row label="Risk:Reward" value={riskReward(trade) ?? ""} />
         <Row label="Profit/loss" value={formatMoney(displayProfitLoss(trade), trade.currency)} />
-        <div className={`py-2 text-sm ${pnlClass(trade.profitLoss)}`}>Result: {trade.result}</div>
+        <Row
+          label="Win/Loss"
+          value={trade.result}
+          valueClass={trade.result === "Win" ? "text-profit" : trade.result === "Loss" ? "text-loss" : "text-white"}
+        />
         <Row label="Strategy" value={trade.strategy ?? ""} />
         <Row label="Entry reason" value={trade.entryReason ?? ""} />
         <Row label="Followed plan" value={trade.followedPlan === true ? "Yes" : trade.followedPlan === false ? "No" : ""} />
@@ -57,7 +62,7 @@ export function TradeDetailPanel({
         <Row label="Lesson" value={trade.lesson ?? ""} />
         <Row label="Notes" value={trade.notes ?? ""} />
 
-        <h3 className="mt-4 text-sm font-medium">Screenshots</h3>
+        <h3 className="mt-4 text-sm font-bold text-white">Screenshots</h3>
         {!trade.images?.length ? (
           <p className="mt-2 text-sm text-zinc-500">No screenshots.</p>
         ) : (

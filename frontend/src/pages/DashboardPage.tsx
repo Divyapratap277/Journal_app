@@ -60,6 +60,7 @@ export function DashboardPage() {
   const monthLabel = new Date(year, month, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
 
   useEffect(() => {
+    if (!activeId) return;
     const q = `from=${from}&to=${to}${accountQuery(activeId)}`;
     let cancelled = false;
     Promise.all([api<Trade[]>(`/api/trades?${q}`), api<Stats>(`/api/stats?${q}`)])
@@ -77,6 +78,7 @@ export function DashboardPage() {
   }, [from, to, activeId]);
 
   useEffect(() => {
+    if (!activeId) return;
     const start = new Date();
     start.setDate(start.getDate() - 120);
     const q = `from=${dayKey(start)}${accountQuery(activeId)}`;

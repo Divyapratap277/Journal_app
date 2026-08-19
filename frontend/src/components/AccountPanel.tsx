@@ -13,12 +13,6 @@ export function AccountPanel({
   const { accounts, activeAccounts, activeId, setActiveId, refresh } = useAccounts();
   const visible = activeAccounts;
 
-  const allPnl = visible.reduce((s, a) => s + a.pnl, 0);
-  const allBalance = visible.reduce((s, a) => s + a.currentBalance, 0);
-  const allTrades = visible.reduce((s, a) => s + a.tradeCount, 0);
-  const startSum = visible.reduce((s, a) => s + Number(a.startingBalance), 0);
-  const allPct = startSum === 0 ? (allPnl === 0 ? 0 : null) : (allPnl / startSum) * 100;
-
   async function archive(account: Account) {
     await api(`/api/accounts/${account.id}`, {
       method: "PUT",
@@ -41,17 +35,12 @@ export function AccountPanel({
   return (
     <aside className="flex h-screen w-72 shrink-0 flex-col border-r border-line bg-surface">
       <div className="border-b border-line px-3 py-4">
-        <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Accounts</div>
+        <div className="text-xs font-bold uppercase tracking-wide text-white">Accounts</div>
         <button type="button" onClick={onNewAccount} className="mt-2 w-full rounded-lg bg-accent py-1.5 text-sm font-medium text-white">
           + New
         </button>
       </div>
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
-        <AccountCard
-          selected={activeId === "all"}
-          onClick={() => setActiveId("all")}
-          aggregated={{ balance: allBalance, pnl: allPnl, profitPercent: allPct, tradeCount: allTrades }}
-        />
         {visible.map((account, index) => (
           <AccountCard
             key={account.id}

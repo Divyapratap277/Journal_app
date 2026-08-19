@@ -17,7 +17,7 @@ const AccountContext = createContext<AccountContextValue | null>(null);
 
 export function AccountProvider({ children }: { children: ReactNode }) {
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [activeId, setActiveIdState] = useState<string>(() => localStorage.getItem(STORAGE_KEY) ?? "all");
+  const [activeId, setActiveIdState] = useState<string>(() => localStorage.getItem(STORAGE_KEY) ?? "");
   const [ready, setReady] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -38,11 +38,10 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (activeId === "all") return;
-    if (accounts.length === 0) return;
-    const found = accounts.find((a) => a.id === activeId);
-    if (!found || found.archived) setActiveId("all");
-  }, [accounts, activeId, setActiveId]);
+    if (activeAccounts.length === 0) return;
+    const found = activeAccounts.find((a) => a.id === activeId);
+    if (!found) setActiveId(activeAccounts[0].id);
+  }, [activeAccounts, activeId, setActiveId]);
 
   const value = useMemo(
     () => ({ accounts, activeAccounts, activeId, setActiveId, refresh, ready }),
@@ -58,13 +57,13 @@ export function useAccounts() {
   return ctx;
 }
 
-/** Always send accountId so the API never defaults to unscoped "all trades". */
+/** Always send a real account id. Empty means no accounts yet. */
 export function accountQuery(activeId: string) {
-  const id = !activeId || activeId === "all" ? "all" : activeId;
-  return `&accountId=${encodeURIComponent(id)}`;
+  if (!activeId || activeId === "all") return "";
+  return `&accountId=${encodeURIComponent(activeId)}`;
 }
 
 export function scopeTrades<T extends { accountId: string }>(trades: T[], activeId: string) {
-  if (!activeId || activeId === "all") return trades;
+  if (!activeId || activeId === "all") return [];
   return trades.filter((t) => t.accountId === activeId);
 }

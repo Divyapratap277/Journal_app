@@ -3,9 +3,8 @@ import { accountColor, cn, formatUsd, pnlClass } from "../format";
 import type { Account } from "../types";
 
 type Props = {
-  account?: Account;
+  account: Account;
   index?: number;
-  aggregated?: { balance: number; pnl: number; profitPercent: number | null; tradeCount: number };
   selected: boolean;
   onClick: () => void;
   onEdit?: () => void;
@@ -20,7 +19,6 @@ function shortId(id: string) {
 export function AccountCard({
   account,
   index = 0,
-  aggregated,
   selected,
   onClick,
   onEdit,
@@ -29,15 +27,13 @@ export function AccountCard({
 }: Props) {
   const [menu, setMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const name = account?.name ?? "All accounts";
-  const idLabel = account ? shortId(account.id) : "AGG";
-  const badge = account ? (account.archived ? "Archived" : account.broker ? account.broker : selected ? "Active" : "Live") : "All";
-  const meta = account
-    ? `${account.tradeCount} trades · ${account.currency}`
-    : `${aggregated?.tradeCount ?? 0} trades · aggregated`;
-  const balance = account ? account.currentBalance : aggregated?.balance ?? 0;
-  const pnl = account ? account.pnl : aggregated?.pnl ?? 0;
-  const pct = account ? account.profitPercent : aggregated?.profitPercent ?? null;
+  const name = account.name;
+  const idLabel = shortId(account.id);
+  const badge = account.archived ? "Archived" : account.broker ? account.broker : selected ? "Active" : "Live";
+  const meta = `${account.tradeCount} trades · ${account.currency}`;
+  const balance = account.currentBalance;
+  const pnl = account.pnl;
+  const pct = account.profitPercent;
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -58,34 +54,34 @@ export function AccountCard({
         <div className="flex items-start gap-2.5">
           <span
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
-            style={{ background: account ? accountColor(index) : "#3d8bfd" }}
+            style={{ background: accountColor(index) }}
           >
             {name.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1 pr-6">
             <div className="flex items-center gap-1.5">
               <span className="truncate text-sm font-semibold text-white">{name}</span>
-              <span className="rounded-full bg-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
+              <span className="rounded-full bg-raised px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                 {badge}
               </span>
             </div>
-            <div className="mt-0.5 font-mono text-[10px] text-zinc-500">ID {idLabel}</div>
-            <div className="mt-0.5 truncate text-[11px] text-zinc-500">{meta}</div>
+            <div className="mt-0.5 font-mono text-[11px] font-bold text-white">ID {idLabel}</div>
+            <div className="mt-0.5 truncate text-xs font-bold text-white">{meta}</div>
           </div>
         </div>
-        <div className="mt-2.5 space-y-1 text-xs">
-          <div className="flex justify-between text-zinc-300">
-            <span className="text-zinc-500">Balance:</span>
+        <div className="mt-2.5 space-y-1 text-xs font-bold">
+          <div className="flex justify-between text-white">
+            <span>Balance:</span>
             <span className="tabular">{formatUsd(balance).replace("+", "")}</span>
           </div>
-          <div className={cn("flex flex-wrap justify-between gap-x-2 text-[11px]", pnlClass(pnl))}>
+          <div className={cn("flex flex-wrap justify-between gap-x-2", pnlClass(pnl))}>
             <span className="tabular">P&L: {formatUsd(pnl)}</span>
             <span className="tabular">Profit %: {pct === null ? "—" : `${pct.toFixed(1)}%`}</span>
           </div>
         </div>
       </button>
 
-      {account && (onEdit || onArchive || onDelete) ? (
+      {onEdit || onArchive || onDelete ? (
         <div className="absolute right-2 top-2" ref={menuRef}>
           <button
             type="button"
