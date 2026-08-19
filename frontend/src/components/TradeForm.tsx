@@ -12,7 +12,6 @@ export type TradeFormValues = {
   entryPrice: string;
   exitPrice: string;
   stopLoss: string;
-  takeProfit: string;
   openedAt: string;
   profitLoss: string;
   currency: string;
@@ -34,7 +33,6 @@ function emptyValues(accountId: string): TradeFormValues {
     entryPrice: "",
     exitPrice: "",
     stopLoss: "",
-    takeProfit: "",
     openedAt: toDatetimeLocal(new Date().toISOString()),
     profitLoss: "",
     currency: "USD",
@@ -57,7 +55,6 @@ function fromTrade(trade: Trade): TradeFormValues {
     entryPrice: trade.entryPrice,
     exitPrice: trade.exitPrice ?? "",
     stopLoss: trade.stopLoss ?? "",
-    takeProfit: trade.takeProfit ?? "",
     openedAt: toDatetimeLocal(trade.openedAt),
     profitLoss: trade.profitLoss ?? "",
     currency: trade.currency,
@@ -83,7 +80,6 @@ export function toPayload(values: TradeFormValues): TradePayload {
   };
   if (values.exitPrice) payload.exitPrice = values.exitPrice;
   if (values.stopLoss) payload.stopLoss = values.stopLoss;
-  if (values.takeProfit) payload.takeProfit = values.takeProfit;
   if (values.profitLoss) payload.profitLoss = values.profitLoss;
   if (values.strategy) payload.strategy = values.strategy;
   if (values.entryReason) payload.entryReason = values.entryReason;
@@ -239,15 +235,11 @@ export function TradeForm({ trade, strategies = [], submitLabel, onSubmit }: Pro
           </label>
           <label className={label}>
             Exit price
-            <input className={field} inputMode="decimal" placeholder="Optional if still open" value={values.exitPrice} onChange={(e) => set("exitPrice", e.target.value)} />
+            <input className={field} inputMode="decimal" placeholder="Fill when closed, e.g. 3336" value={values.exitPrice} onChange={(e) => set("exitPrice", e.target.value)} />
           </label>
           <label className={label}>
             Stop loss
-            <input className={field} inputMode="decimal" value={values.stopLoss} onChange={(e) => set("stopLoss", e.target.value)} />
-          </label>
-          <label className={label}>
-            Take profit
-            <input className={field} inputMode="decimal" value={values.takeProfit} onChange={(e) => set("takeProfit", e.target.value)} />
+            <input className={field} inputMode="decimal" placeholder="Price, e.g. 3328" value={values.stopLoss} onChange={(e) => set("stopLoss", e.target.value)} />
           </label>
           <label className={label}>
             Open date and time
@@ -255,7 +247,7 @@ export function TradeForm({ trade, strategies = [], submitLabel, onSubmit }: Pro
           </label>
           <label className={label}>
             Profit or loss
-            <input className={field} inputMode="decimal" placeholder="Optional if still open" value={values.profitLoss} onChange={(e) => set("profitLoss", e.target.value)} />
+            <input className={field} inputMode="decimal" placeholder="$ result, e.g. 40 or -25. Blank if open" value={values.profitLoss} onChange={(e) => set("profitLoss", e.target.value)} />
             {suggested ? (
               <button type="button" className="mt-1 text-xs text-profit underline" onClick={() => set("profitLoss", suggested)}>
                 Use calculated P/L ({suggested})

@@ -25,7 +25,6 @@ export type SerializedTrade = {
   entryPrice: string;
   exitPrice: string | null;
   stopLoss: string | null;
-  takeProfit: string | null;
   openedAt: string;
   profitLoss: string | null;
   currency: string;
@@ -75,7 +74,6 @@ export function serializeTrade(
     entryPrice: trade.entryPrice.toString(),
     exitPrice: dec(trade.exitPrice),
     stopLoss: dec(trade.stopLoss),
-    takeProfit: dec(trade.takeProfit),
     openedAt: trade.openedAt.toISOString(),
     profitLoss: dec(trade.profitLoss),
     currency: trade.currency,
@@ -101,7 +99,6 @@ export function toPrismaData(body: {
   entryPrice: string;
   exitPrice?: string;
   stopLoss?: string;
-  takeProfit?: string;
   openedAt: string;
   profitLoss?: string;
   currency?: string;
@@ -121,7 +118,6 @@ export function toPrismaData(body: {
     entryPrice: body.entryPrice,
     exitPrice: body.exitPrice ?? null,
     stopLoss: body.stopLoss ?? null,
-    takeProfit: body.takeProfit ?? null,
     openedAt: new Date(body.openedAt),
     profitLoss: body.profitLoss ?? null,
     currency: body.currency ?? "USD",

@@ -46,7 +46,6 @@ export function TradeDetailPanel({
         <Row label="Entry" value={trade.entryPrice} />
         <Row label="Exit" value={trade.exitPrice ?? ""} />
         <Row label="Stop loss" value={trade.stopLoss ?? ""} />
-        <Row label="Take profit" value={trade.takeProfit ?? ""} />
         <Row label="Risk:Reward" value={riskReward(trade) ?? ""} />
         <Row label="Profit/loss" value={formatMoney(displayProfitLoss(trade), trade.currency)} />
         <Row

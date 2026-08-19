@@ -4,18 +4,19 @@ export function riskReward(input: {
   direction: Direction;
   entryPrice: string;
   stopLoss: string | null;
-  takeProfit: string | null;
+  exitPrice: string | null;
 }) {
-  if (!input.stopLoss || !input.takeProfit) return null;
+  if (!input.stopLoss || !input.exitPrice) return null;
   const entry = Number(input.entryPrice);
   const sl = Number(input.stopLoss);
-  const tp = Number(input.takeProfit);
-  if (![entry, sl, tp].every((n) => Number.isFinite(n))) return null;
+  const exit = Number(input.exitPrice);
+  if (![entry, sl, exit].every((n) => Number.isFinite(n))) return null;
   const risk = input.direction === "BUY" ? entry - sl : sl - entry;
-  const reward = input.direction === "BUY" ? tp - entry : entry - tp;
-  if (risk <= 0 || reward <= 0) return null;
-  const ratio = reward / risk;
-  return `1:${ratio.toFixed(ratio >= 10 ? 1 : 2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")}`;
+  const result = input.direction === "BUY" ? exit - entry : entry - exit;
+  if (risk <= 0) return null;
+  const ratio = result / risk;
+  const formatted = ratio.toFixed(Math.abs(ratio) >= 10 ? 1 : 2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1");
+  return `1:${formatted}`;
 }
 
 export function currentSession(date = new Date()) {

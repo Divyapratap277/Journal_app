@@ -21,7 +21,6 @@ export type Trade = {
   entryPrice: string;
   exitPrice: string | null;
   stopLoss: string | null;
-  takeProfit: string | null;
   openedAt: string;
   profitLoss: string | null;
   currency: string;
@@ -46,7 +45,6 @@ export type TradePayload = {
   entryPrice: string;
   exitPrice?: string;
   stopLoss?: string;
-  takeProfit?: string;
   openedAt: string;
   profitLoss?: string;
   currency?: string;

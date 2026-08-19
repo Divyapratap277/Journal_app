@@ -35,7 +35,6 @@ model Trade {
   entryPrice     Decimal      @db.Decimal(18, 8)
   exitPrice      Decimal?     @db.Decimal(18, 8)
   stopLoss       Decimal?     @db.Decimal(18, 8)
-  takeProfit     Decimal?     @db.Decimal(18, 8)
   openedAt       DateTime
   profitLoss     Decimal?     @db.Decimal(18, 8)
   currency       String       @default("USD")

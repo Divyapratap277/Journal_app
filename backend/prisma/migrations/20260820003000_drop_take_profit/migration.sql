@@ -1,0 +1,1 @@
+ALTER TABLE "Trade" DROP COLUMN IF EXISTS "takeProfit";

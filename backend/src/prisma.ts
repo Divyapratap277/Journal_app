@@ -5,7 +5,7 @@ const globalForPrisma = globalThis as unknown as {
   prismaSchema?: string;
 };
 
-const SCHEMA_ID = "account-archived-v1";
+const SCHEMA_ID = "drop-take-profit-v1";
 
 function createClient() {
   return new PrismaClient({
