@@ -1,0 +1,70 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Direction {
+  BUY
+  SELL
+}
+
+model Account {
+  id               String   @id @default(cuid())
+  name             String
+  broker           String?
+  startingBalance  Decimal  @db.Decimal(18, 8)
+  currency         String   @default("USD")
+  createdAt        DateTime @default(now())
+  archived          Boolean  @default(false)
+  trades            Trade[]
+}
+
+model Trade {
+  id             String       @id @default(cuid())
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  symbol         String
+  direction      Direction
+  quantity       Decimal      @db.Decimal(18, 8)
+  entryPrice     Decimal      @db.Decimal(18, 8)
+  exitPrice      Decimal?     @db.Decimal(18, 8)
+  stopLoss       Decimal?     @db.Decimal(18, 8)
+  takeProfit     Decimal?     @db.Decimal(18, 8)
+  openedAt       DateTime
+  profitLoss     Decimal?     @db.Decimal(18, 8)
+  currency       String       @default("USD")
+  strategy       String?
+  entryReason    String?
+  followedPlan   Boolean?
+  emotionalState String?
+  mistake        String?
+  lesson         String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  images         TradeImage[]
+
+  @@index([openedAt])
+  @@index([symbol])
+  @@index([direction])
+  @@index([strategy])
+  @@index([accountId])
+}
+
+model TradeImage {
+  id                 String   @id @default(cuid())
+  tradeId            String
+  trade              Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  fileName           String
+  cloudinaryPublicId String
+  secureUrl          String
+  mimeType           String
+  sizeBytes          Int
+  createdAt          DateTime @default(now())
+}
